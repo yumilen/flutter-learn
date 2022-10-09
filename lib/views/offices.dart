@@ -1,53 +1,72 @@
 import 'package:flutter/material.dart';
 
+import '../models/offices.dart';
+import '../utiles/responses.dart';
 
-class Offices extends StatefulWidget {
-  const Offices({super.key, required this.title});
+
+class OfficesPage extends StatefulWidget {
+  const OfficesPage({super.key, required this.title});
 
   final String title;
 
   @override
-  State<Offices> createState() => _OfficesState();
+  State<OfficesPage> createState() => _OfficesPageState();
 }
 
-class _OfficesState extends State<Offices> {
-  int _counter = 0;
+class _OfficesPageState extends State<OfficesPage> {
+  late Future<Offices> offices;
 
-  void _incrementCounter() {
-    setState(() {
+  @override
+  void initState() {
+    super.initState();
 
-      _counter++;
-    });
+    offices = _getOffices();
+  }
+
+  Future<Offices> _getOffices() async {
+    var json = await getJsonFromUrl('https://about.google/static/data/locations.json');
+
+    Offices offices = Offices.fromJson(json["offices"]);
+
+    return offices;
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-
         title: Text(widget.title),
+        centerTitle: true
       ),
-      body: Center(
-
-        child: Column(
-
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headline4,
-            ),
-          ],
-        ),
+      body: FutureBuilder<Offices>(
+        future: offices,
+        builder: ((context, snapshot) {
+          Offices offices = snapshot.data as Offices;
+          if (snapshot.hasData) {
+            return ListView.builder(
+              itemCount: offices.list.length,
+              itemBuilder: (BuildContext context, int index) {
+                Office office = offices.list[index];
+                return Card(
+                  child: ListTile(
+                    title: Text(office.name),
+                    subtitle: Text(office.address),
+                    leading: Image.network(office.image),
+                    isThreeLine: true,
+                  ),
+                );
+              },
+            );
+          } 
+          else if (snapshot.hasError) {
+            return const Text('Error');
+          }
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        }),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), 
+
     );
   }
 }
