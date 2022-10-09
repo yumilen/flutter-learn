@@ -26,7 +26,7 @@ class _OfficesPageState extends State<OfficesPage> {
   Future<Offices> _getOffices() async {
     var json = await getJsonFromUrl('https://about.google/static/data/locations.json');
 
-    Offices offices = Offices.fromJson(json["offices"]);
+    Offices offices = Offices.fromJson(json["offices"].toList());
 
     return offices;
   }
@@ -40,13 +40,15 @@ class _OfficesPageState extends State<OfficesPage> {
       ),
       body: FutureBuilder<Offices>(
         future: offices,
-        builder: ((context, snapshot) {
-          Offices offices = snapshot.data as Offices;
+        builder: ((BuildContext context, AsyncSnapshot<Offices> snapshot) {
+          Offices offices = snapshot.data ?? Offices(officesList: [Office(id: '2', name: 'Name', image: '')]);
+
           if (snapshot.hasData) {
             return ListView.builder(
               itemCount: offices.list.length,
               itemBuilder: (BuildContext context, int index) {
                 Office office = offices.list[index];
+
                 return Card(
                   child: ListTile(
                     title: Text(office.name),

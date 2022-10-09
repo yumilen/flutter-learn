@@ -19,16 +19,16 @@ class Office {
   final String phone;
   final String region;
   final String address;
-  final int? lat;
-  final int? lng;
+  final double? lat;
+  final double? lng;
 
 
   Office({
     required this.id,
     required this.name,
-    required this.image,
-    this.phone = '',
-    this.region = '',
+    this.image   = '',
+    this.phone   = '',
+    this.region  = '',
     this.address = '',
     this.lat,
     this.lng,
@@ -42,8 +42,8 @@ class Office {
       phone: jsonMap["phone"] as String,
       region: jsonMap["region"] as String,
       address: jsonMap["address"] as String,
-      lat: jsonMap["lat"] as int,
-      lng: jsonMap["lng"] as int
+      lat: jsonMap["lat"] as double,
+      lng: jsonMap["lng"] as double
     );
   }
 }
