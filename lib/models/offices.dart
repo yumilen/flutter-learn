@@ -1,8 +1,31 @@
+import 'package:http/http.dart' as http;
+
+
+
+
+Future<String> getJsonFroUrl(String url) async {
+  final responce = await http.get(url as Uri);
+
+  
+  
+  return '';
+}
+
+
+
 
 class Offices {
-  late final List<Office> list;
+  final List<Office> list;
 
-  Offices();
+  Offices({required officesList}) : list = officesList;
+
+  factory Offices.fromJson(Map<String, dynamic> jsonMap) {
+    var offices = jsonMap["offices"].toList();
+
+    List<Office> officesList = offices.map((office) => Office.fromJson(office)).toList();
+
+    return Offices(officesList: officesList);
+  }
 }
 
 class Office {
